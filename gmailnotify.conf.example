@@ -1,0 +1,25 @@
+[credentials]
+# points to a file containing two lines: username and password
+#file = ~/.gmaillogin
+#or
+#username = 1337hax0r
+#password = topsecret
+#or to be prompted for the password
+#username = 1337hax0r
+#password = prompt
+
+[options]
+sleep = 10
+
+[INBOX]
+sound = ~/.sounds/gotmail00.wav
+urgency = critical
+
+[Archlinux]
+urgency = normal
+
+[suckless]
+urgency = normal
+
+[facebook]
+urgency = normal

@@ -7,6 +7,7 @@ import os
 import time
 
 from ConfigParser import ConfigParser
+from optparse import OptionParser
 from os import getenv
 from os.path import join
 
@@ -167,6 +168,22 @@ def parse_config():
 def main():
     pynotify.init("gmailnotify.py")
     config, boxes = parse_config()
+
+    parser = OptionParser("gmailnotify")
+    parser.add_option("-d", "--display", action='store_true',
+            dest='display', default=False,
+            help="Display unread messages. If no arguments are given, display"
+            " all inboxes, otherwise just the ones in the arguments.")
+
+    (options, args) = parser.parse_args()
+
+    if options.display:
+        if args:
+            boxes = [box for box in boxes if box.name in args]
+        for box in boxes:
+            box.update()
+        sys.exit(0)
+
     run(config, boxes)
 
 if __name__ == '__main__':

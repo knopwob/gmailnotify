@@ -112,7 +112,7 @@ def parse_credentials_include(cred_file):
     login.strip()
     login = login.split("\n")
     # remove empty elements
-    login = filter(lambda x: len(x) > 0, login)
+    login = [x for x in login if x]
 
     if len(login) != 2:
         print "ERROR: invalid credentials"

@@ -11,58 +11,9 @@ from os import getenv
 from os.path import join
 
 
-def parse_credentials(cred_file):
-    cred_file = os.path.expanduser(cred_file)
-    if not os.path.isfile(cred_file):
-        print "ERROR: %s not found" % cred_file
-        sys.exit(1)
-
-    with open(cred_file) as f:
-        login = f.read()
-
-    login.strip()
-    login = login.split("\n")
-    # remove empty elements
-    login = filter(lambda x: len(x) > 0, login)
-
-    if len(login) != 2:
-        print "ERROR: invalid credentials"
-        sys.exit(1)
-
-    return login
-
-
-
-
-def mail_count(msg):
-    begin = msg.find("<fullcount>")
-    end = msg.find("</fullcount>")
-    return msg[begin+12:end]
-
-
-def titles(msg):
-    begin = msg.find("<title>")
-    end = msg.find("</title>")
-
-    t = []
-
-    while begin > 0:
-        t.append(msg[begin+len("<title>"):end])
-        begin = msg.find("<title>", begin + len("<title>"))
-        end = msg.find("</title>", end + len("</title>"))
-
-    return t
-
-def run(config, boxes):
-    sleep = config.getint("options", "sleep")
-    while True:
-        for box in boxes:
-            box.update()
-        time.sleep(sleep * 60)
-
-
 class Inbox(object):
-    def __init__(self, name, config, urgency=pynotify.URGENCY_NORMAL, sound = None):
+    def __init__(self, name, config,
+                 urgency=pynotify.URGENCY_NORMAL, sound=None):
         self.name = name
         self.config = config
         self.urgency = urgency
@@ -95,7 +46,6 @@ class Inbox(object):
             if s not in summaries:
                 self.known_mails.remove(s)
 
-
         for s in new:
             n = pynotify.Notification("New Mail (%s) " % self.name, s)
             n.set_urgency(self.urgency)
@@ -104,6 +54,50 @@ class Inbox(object):
         if len(new) > 0 and self.sound:
             com = "aplay %s" % self.sound
             os.popen(com)
+
+
+def parse_credentials(cred_file):
+    cred_file = os.path.expanduser(cred_file)
+    if not os.path.isfile(cred_file):
+        print "ERROR: %s not found" % cred_file
+        sys.exit(1)
+
+    with open(cred_file) as f:
+        login = f.read()
+
+    login.strip()
+    login = login.split("\n")
+    # remove empty elements
+    login = filter(lambda x: len(x) > 0, login)
+
+    if len(login) != 2:
+        print "ERROR: invalid credentials"
+        sys.exit(1)
+
+    return login
+
+
+def titles(msg):
+    begin = msg.find("<title>")
+    end = msg.find("</title>")
+
+    t = []
+
+    while begin > 0:
+        t.append(msg[begin + len("<title>"):end])
+        begin = msg.find("<title>", begin + len("<title>"))
+        end = msg.find("</title>", end + len("</title>"))
+
+    return t
+
+
+def run(config, boxes):
+    sleep = config.getint("options", "sleep")
+    while True:
+        for box in boxes:
+            box.update()
+        time.sleep(sleep * 60)
+
 
 def prompt_password(config):
     import Tkinter as tk
@@ -114,7 +108,6 @@ def prompt_password(config):
         pw = pw_entry.get()
         config.set('credentials', 'password', pw)
         root.destroy()
-
 
     label1 = tk.Label(root, text="Enter password for %s: " %
             config.get('credentials', 'username'))
@@ -153,7 +146,6 @@ def main():
 
     if config.get('credentials', 'password') == 'prompt':
         config = prompt_password(config)
-
 
     boxes = []
 

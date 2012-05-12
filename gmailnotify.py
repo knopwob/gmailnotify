@@ -40,21 +40,19 @@ class Inbox(object):
         msg = urllib.urlopen(url).read()
         return msg
 
+    def _notify(self, body):
+        n = pynotify.Notification("New Mail (%s) " % self.name, body)
+        n.set_urgency(self.urgency)
+        n.show()
+
     def update(self):
         msg = self.get_feed()
         summaries = self.titles(msg)[1:]
 
-        new_mail = False
-        for s in summaries:
-            if s not in self.last_mails:
-                n = pynotify.Notification("New Mail (%s) " % self.name, s)
-                n.set_urgency(self.urgency)
-                n.show()
-                new_mail = True
+        new = [self._notify(s) for s in summaries if s not in self.last_mails]
 
-        if new_mail and self.sound:
-            com = "aplay %s" % self.sound
-            os.popen(com)
+        if new and self.sound:
+            os.popen("aplay %s" % self.sound)
 
         self.last_mails = summaries
 

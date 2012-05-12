@@ -18,7 +18,7 @@ class Inbox(object):
         self.config = config
         self.urgency = urgency
         self.sound = sound
-        self.known_mails = []
+        self.last_mails = []
 
 
     def titles(self, msg):
@@ -44,29 +44,21 @@ class Inbox(object):
     def update(self):
         msg = self.get_feed()
         summaries = self.titles(msg)[1:]
-        new = []
 
+        new_mail = False
         for s in summaries:
-            if s not in self.known_mails:
-                self.known_mails.append(s)
-                new.append(s)
+            if s not in self.last_mails:
+                n = pynotify.Notification("New Mail (%s) " % self.name, s)
+                n.set_urgency(self.urgency)
+                n.show()
+                new_mail = True
 
-        # remove mails from self.known_mails after
-        # they aren't in the feed anymore
-        # otherwise replies with the same subject won't begin
-        # recognized as new mail
-        for s in self.known_mails:
-            if s not in summaries:
-                self.known_mails.remove(s)
-
-        for s in new:
-            n = pynotify.Notification("New Mail (%s) " % self.name, s)
-            n.set_urgency(self.urgency)
-            n.show()
-
-        if len(new) > 0 and self.sound:
+        if new_mail and self.sound:
             com = "aplay %s" % self.sound
             os.popen(com)
+
+        self.last_mails = summaries
+
 
 
 def parse_credentials(cred_file):

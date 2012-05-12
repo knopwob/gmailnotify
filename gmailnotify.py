@@ -20,6 +20,19 @@ class Inbox(object):
         self.sound = sound
         self.known_mails = []
 
+
+    def titles(self, msg):
+        begin = msg.find("<title>")
+        end = msg.find("</title>")
+        t = []
+
+        while begin > 0:
+            t.append(msg[begin + len("<title>"):end])
+            begin = msg.find("<title>", begin + len("<title>"))
+            end = msg.find("</title>", end + len("</title>"))
+
+        return t
+
     def get_feed(self):
         user = self.config.get('credentials', 'username')
         password = self.config.get('credentials', 'password')
@@ -30,7 +43,7 @@ class Inbox(object):
 
     def update(self):
         msg = self.get_feed()
-        summaries = titles(msg)[1:]
+        summaries = self.titles(msg)[1:]
         new = []
 
         for s in summaries:
@@ -75,20 +88,6 @@ def parse_credentials(cred_file):
         sys.exit(1)
 
     return login
-
-
-def titles(msg):
-    begin = msg.find("<title>")
-    end = msg.find("</title>")
-
-    t = []
-
-    while begin > 0:
-        t.append(msg[begin + len("<title>"):end])
-        begin = msg.find("<title>", begin + len("<title>"))
-        end = msg.find("</title>", end + len("</title>"))
-
-    return t
 
 
 def run(config, boxes):

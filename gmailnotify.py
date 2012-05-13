@@ -57,6 +57,8 @@ class Inbox(object):
 
         self.last_mails = summaries
 
+        return new
+
 
 def run(config, boxes):
     sleep = config.getint("options", "sleep")
@@ -178,10 +180,15 @@ def main():
     (options, args) = parser.parse_args()
 
     if options.display:
+        unread = False
         if args:
             boxes = [box for box in boxes if box.name in args]
         for box in boxes:
-            box.update()
+            unread = True if unread or box.update() else False
+
+        if not unread:
+            n = pynotify.Notification("There's nothing to see here")
+            n.show()
         sys.exit(0)
 
     run(config, boxes)

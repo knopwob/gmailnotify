@@ -63,8 +63,14 @@ class Inbox(object):
 def run(config, boxes):
     sleep = config.getint("options", "sleep")
     while True:
-        for box in boxes:
-            box.update()
+        try:
+            for box in boxes:
+                box.update()
+        except:
+            n = pynotify.Notification("Error getting emails")
+            n.set_urgency(pynotify.URGENCY_CRITICAL)
+            n.show()
+
         time.sleep(sleep * 60)
 
 

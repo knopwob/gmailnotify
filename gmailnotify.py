@@ -42,9 +42,13 @@ class Inbox(object):
         return msg
 
     def _notify(self, body):
-        n = pynotify.Notification("New Mail (%s) " % self.name, body)
-        n.set_urgency(self.urgency)
-        n.show()
+        try:
+            n = pynotify.Notification("New Mail (%s) " % self.name, body)
+            n.set_urgency(self.urgency)
+            n.show()
+        except:
+            print "Unable to send notification."
+
 
     def update(self):
         msg = self.get_feed()
@@ -67,9 +71,13 @@ def run(config, boxes):
             for box in boxes:
                 box.update()
         except:
-            n = pynotify.Notification("Error getting emails")
-            n.set_urgency(pynotify.URGENCY_CRITICAL)
-            n.show()
+            try:
+                n = pynotify.Notification("Error getting emails")
+                n.set_urgency(pynotify.URGENCY_CRITICAL)
+                n.show()
+            except:
+                print "Unable to send notification."
+
 
         time.sleep(sleep * 60)
 

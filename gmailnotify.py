@@ -50,7 +50,7 @@ class Inbox(object):
             print "Unable to send notification."
 
 
-    def update(self):
+    def update(self, fh):
         msg = self.get_feed()
         summaries = self.titles(msg)[1:]
 
@@ -61,15 +61,25 @@ class Inbox(object):
 
         self.last_mails = summaries
 
+        if (fh is not None and len(summaries) > 0):
+            fh.write("%s (%s):\n" % (self.name, len(summaries)))
+            for s in summaries:
+                fh.write("   %s\n" % s)
+
         return new
 
 
 def run(config, boxes):
     sleep = config.getint("options", "sleep")
     while True:
+        if config.has_option("options", "write_dest"):
+            filename = config.get("options", "write_dest")
+            f = open(filename, 'w')
+        else:
+            f = None
         try:
             for box in boxes:
-                box.update()
+                box.update(f)
         except:
             try:
                 n = pynotify.Notification("Error getting emails")
@@ -77,6 +87,9 @@ def run(config, boxes):
                 n.show()
             except:
                 print "Unable to send notification."
+
+        print "done"
+        f.close()
 
 
         time.sleep(sleep * 60)
@@ -180,7 +193,6 @@ def parse_config():
     mailboxes = parse_mailboxes(config)
     return (config, mailboxes)
 
-
 def main():
     pynotify.init("gmailnotify.py")
     config, boxes = parse_config()
@@ -190,9 +202,15 @@ def main():
             dest='display', default=False,
             help="Display unread messages. If no arguments are given, display"
             " all inboxes, otherwise just the ones in the arguments.")
+    parser.add_option("-w", "--write", action='store', dest='write_dest',
+            default=None)
+
+
 
     (options, args) = parser.parse_args()
 
+    if options.write_dest is not None:
+        config.set("options", "write_dest", options.write_dest)
     if options.display:
         unread = False
         if args:

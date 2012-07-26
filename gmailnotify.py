@@ -216,7 +216,11 @@ def main():
         if args:
             boxes = [box for box in boxes if box.name in args]
         for box in boxes:
-            unread = True if unread or box.update() else False
+            if config.has_option("options", "write_dest"):
+                fh = open(config.get("options", "write_dest"), 'w')
+            else:
+                fh = None
+            unread = True if unread or box.update(fh) else False
 
         if not unread:
             n = pynotify.Notification("There's nothing to see here")

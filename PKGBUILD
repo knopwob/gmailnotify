@@ -2,14 +2,14 @@
 
 _pkgname=gmailnotify
 pkgname=gmailnotify-git
-pkgver=20120511
+pkgver=20121130
 pkgrel=1
 pkgdesc="A gmail notifier using libnotify"
 arch=('any')
 url="https://github.com/knopwob/gmailnotify"
 license=('GPL')
 groups=()
-depends=('python2' 'python-notify')
+depends=('python2' 'python2-notify')
 optdepends=('tk: interactive password prompt')
 makedepends=('git')
 

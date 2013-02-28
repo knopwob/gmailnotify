@@ -97,8 +97,12 @@ def run(config, boxes):
 
 def read_config():
     config = ConfigParser()
-    files = (join(getenv("XDG_CONFIG_HOME"), "gmailnotify.conf"),
-             join(getenv("HOME"), "gmailnotify.py"))
+    files = []
+    try:
+        files.append(join(getenv("XDG_CONFIG_HOME"), "gmailnotify.conf"))
+    except:
+        files.append(join(getenv("HOME"), ".config", "gmailnotify.conf"))
+
     config.read(files)
 
     return config

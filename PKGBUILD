@@ -2,7 +2,7 @@
 
 _pkgname=gmailnotify
 pkgname=gmailnotify-git
-pkgver=20121130
+pkgver=20130207
 pkgrel=1
 pkgdesc="A gmail notifier using libnotify"
 arch=('any')

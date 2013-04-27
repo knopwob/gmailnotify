@@ -89,7 +89,8 @@ def run(config, boxes):
                 print "Unable to send notification."
 
         print "done"
-        f.close()
+        if f is not None:
+            f.close()
 
 
         time.sleep(sleep * 60)

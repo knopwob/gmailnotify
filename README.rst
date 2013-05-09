@@ -3,8 +3,24 @@ Checkgmail
 
 Checkgmail notifies you about new emails using libnotify.
 
+IMPORTANT
+---------
+
+Please note that this project is abandoned. Pull request might still get merged but
+there will be no active developement besides that.
+
+running
+-------
+
+The easiest way to run this is to add "gmailnotify.py &" to your .xinitrc before
+you exec to your window manager.
+
 configuration
 -------------
+
+The configuration file has to be saved as "$XDG_CONFIG_HOME/gmailnotify.conf" or
+"/home/knopwob/.config/gmailnotify.conf" which on most systems should be the same.
+
 example ::
 
     [credentials]
